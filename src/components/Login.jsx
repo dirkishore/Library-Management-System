@@ -1,20 +1,28 @@
 import { useState } from "react";
-import fbLogo from "../assets/icons8-facebook-384.png";
-import axios from "axios"
+import { Navigate, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [authenticated, setauthenticated] = useState(
+    localStorage.getItem(localStorage.getItem("authenticated") || false)
+  );
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-
-  const handleSubmit = (e)=>{
-    e.preventDefault()
-    axios.post("http://localhost:5000/api/user/create-user",{email,password}).then((res)=>{
-      console.log(res.data);
-    }).catch((err)=>console.log(err))
-  }
- 
-  
+  const navigate = useNavigate();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:5000/api/user/login", { email, password })
+      .then((res) => {
+        if (res.data.message === "success") {
+          setauthenticated(true);
+          localStorage.setItem("authenticated", true);
+          navigate("/home");
+        }
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div className=" bg-light">
@@ -24,8 +32,8 @@ const Login = () => {
             <div className="col-12 col-xxl-4 col-lg-5 col-md-6 col-sm-8">
               <div className="card shadow-lg p-sm-3">
                 <div className="card-body px-3 py-4 px-sm-2 px-md-1 px-lg-2 px-xl-5">
-                  <h3 className="fs-3 text-center mb-4">Sign Up</h3>
-                  <form method="POST">
+                  <h3 className="fs-3 text-center mb-4">Sign In</h3>
+                  <form method="POST" onSubmit={handleSubmit}>
                     <div className="mb-2">
                       <label htmlFor="email" className="form-label w-75">
                         Email
@@ -35,7 +43,7 @@ const Login = () => {
                         name="email"
                         id="email"
                         className="form-control"
-                        onChange={(e)=>setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                     <div className="mb-3">
@@ -47,11 +55,16 @@ const Login = () => {
                         name="pass"
                         id="pass"
                         className="form-control"
-                        onChange={(e)=>setPassword(e.target.value)}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
                     <div className="d-grid mt-4">
-                      <button className="btn btn-pink shadow-sm" onClick={handleSubmit}>Sign Up</button>
+                      <button
+                        className="btn btn-pink shadow-sm"
+                        onClick={handleSubmit}
+                      >
+                        Sign In
+                      </button>
                     </div>
                   </form>
 
@@ -69,9 +82,9 @@ const Login = () => {
                     </div>
                   </div>
                   <p className="card-text text-center mt-3">
-                    Already a user?  {" "}
-                      <a href="#" className="text-black">
-                      LOGIN
+                    Already a user?{"  "}
+                    <a href="#" className="text-black">
+                      Sign Up
                     </a>
                   </p>
                 </div>
